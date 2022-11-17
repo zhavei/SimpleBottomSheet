@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.syafei.simplebottomsheet.databinding.ActivityMainBinding
 
@@ -35,6 +36,20 @@ class MainActivity : AppCompatActivity() {
         taskViewModel.desk.observe(this) {
             binding.textDescription.text = String.format("Task Description: %s", it)
         }*/
+
+        setupRecyclerView()
+
+    }
+
+    private fun setupRecyclerView() {
+        val mainActivity = this
+        taskViewModel.taskItems.observe(mainActivity) {
+            binding.toDoListRecyclerview.apply {
+                layoutManager = LinearLayoutManager(applicationContext)
+                adapter = TaskItemAdapter(it)
+
+            }
+        }
 
     }
 }

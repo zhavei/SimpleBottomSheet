@@ -41,8 +41,8 @@ class NewTaskSheetFragment(var taskItem: TaskItem?) : BottomSheetDialogFragment(
         if (taskItem != null) {
             binding.taskTitle.text = "Edit Task"
             val editable = Editable.Factory.getInstance()
-            binding.name.text = editable.newEditable(taskItem?.name)
-            binding.desc.text = editable.newEditable(taskItem?.desc)
+            binding.etName.text = editable.newEditable(taskItem?.name)
+            binding.etDesc.text = editable.newEditable(taskItem?.desc)
         } else {
             binding.taskTitle.text = "New Task"
         }
@@ -50,8 +50,8 @@ class NewTaskSheetFragment(var taskItem: TaskItem?) : BottomSheetDialogFragment(
     }
 
     private fun saveAction() {
-        val taskName = binding.name.text.toString()
-        val taskDesc = binding.desc.text.toString()
+        val taskName = binding.etName.text.toString()
+        val taskDesc = binding.etDesc.text.toString()
 
         if (taskItem == null) {
             val newTask = TaskItem(taskName, taskDesc, null, null)
@@ -60,8 +60,8 @@ class NewTaskSheetFragment(var taskItem: TaskItem?) : BottomSheetDialogFragment(
             taskViewModel.updateTaskItem(taskItem!!.id, taskName, taskDesc, null)
         }
 
-        binding.name.setText("")
-        binding.desc.setText("")
+        binding.etName.setText("")
+        binding.etDesc.setText("")
         dismiss()
         Toast.makeText(requireContext(), "Task $taskName entered", Toast.LENGTH_SHORT).show()
     }
