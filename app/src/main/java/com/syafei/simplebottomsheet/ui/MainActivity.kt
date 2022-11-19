@@ -1,14 +1,17 @@
 package com.syafei.simplebottomsheet.ui
 
+import android.os.Build
 import android.os.Bundle
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.syafei.simplebottomsheet.data.TaskItem
 import com.syafei.simplebottomsheet.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), TaskItemClickListener {
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
     private lateinit var binding: ActivityMainBinding
@@ -25,6 +28,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.newTaskButton.setOnClickListener {
 
+            //fragment bottomSheet showing up
             NewTaskSheetFragment(null).show(supportFragmentManager, NewTaskSheetFragment.TAG)
         }
 
@@ -42,14 +46,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        val mainActivity = this
+        val mainActivity = this@MainActivity
         taskViewModel.taskItems.observe(mainActivity) {
             binding.toDoListRecyclerview.apply {
                 layoutManager = LinearLayoutManager(applicationContext)
-                adapter = TaskItemAdapter(it)
+                adapter = TaskItemAdapter(it, mainActivity)
 
             }
         }
 
+    }
+
+    override fun editTaskItemClicked(taskItem: TaskItem) {
+        NewTaskSheetFragment(taskItem).show(supportFragmentManager, NewTaskSheetFragment.TAG)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun completeTaskItemClicked(taskItem: TaskItem) {
+        taskViewModel.setCompleted(taskItem)
     }
 }
