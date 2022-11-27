@@ -38,8 +38,8 @@ class TaksItemViewHolder(
             clickListener.editTaskItemClicked(taskItem)
         }
 
-        if (taskItem.dueTime != null)
-            binding.tvDueTime.text = timeFormat.format(taskItem.dueTime)
+        if (taskItem.dueTime() != null)
+            binding.tvDueTime.text = timeFormat.format(taskItem.dueTime())
         else
             binding.tvDueTime.text = ""
 

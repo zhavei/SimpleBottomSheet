@@ -1,5 +1,6 @@
 package com.syafei.simplebottomsheet.ui
 
+import android.app.TimePickerDialog
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -52,8 +53,8 @@ class NewTaskSheetFragment(var taskItem: TaskItem?) : BottomSheetDialogFragment(
             binding.etName.text = editable.newEditable(taskItem?.name)
             binding.etDesc.text = editable.newEditable(taskItem?.desc)
 
-            if (taskItem?.dueTime != null) {
-                dueTime = taskItem?.dueTime
+            if (taskItem?.dueTime() != null) {
+                dueTime = taskItem?.dueTime()
                 updateTimeButtonText()
             }
 
@@ -64,19 +65,40 @@ class NewTaskSheetFragment(var taskItem: TaskItem?) : BottomSheetDialogFragment(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
+    private fun openTimePicker() {
+        if (dueTime == null)
+            dueTime = LocalTime.now()
+        val listener =
+            TimePickerDialog.OnTimeSetListener { timePicker, selectedHours, selectedMinutes ->
+                dueTime = LocalTime.of(selectedHours, selectedMinutes)
+                updateTimeButtonText()
+            }
+        val dialogTimePicker =
+            TimePickerDialog(activity, listener, dueTime!!.hour, dueTime!!.minute, true)
+        dialogTimePicker.setTitle("Task Due")
+        dialogTimePicker.show()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun updateTimeButtonText() {
         binding.btnTimePicker.text = String.format("%02d:%02d", dueTime?.hour, dueTime?.minute)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun saveAction() {
         val taskName = binding.etName.text.toString()
         val taskDesc = binding.etDesc.text.toString()
+        val dueTimeString = if (dueTime == null) null else TaskItem.timeFormatter.format(dueTime)
 
         if (taskItem == null) {
-            val newTask = TaskItem(taskName, taskDesc, null, null)
+            val newTask = TaskItem(taskName, taskDesc, dueTimeString, null)
             taskViewModel.addTaskItem(newTask)
         } else {
-            taskViewModel.updateTaskItem(taskItem!!.id, taskName, taskDesc, null)
+            taskItem?.name = taskName
+            taskItem?.desc = taskDesc
+            taskItem?.dueTimeString = dueTimeString
+
+            taskViewModel.updateTaskItem(taskItem!!)
         }
 
         binding.etName.setText("")
@@ -91,7 +113,7 @@ class NewTaskSheetFragment(var taskItem: TaskItem?) : BottomSheetDialogFragment(
     }
 
     companion object {
-        val TAG = "NewTaskFragment"
+        const val TAG = "NewTaskFragment"
 
     }
 

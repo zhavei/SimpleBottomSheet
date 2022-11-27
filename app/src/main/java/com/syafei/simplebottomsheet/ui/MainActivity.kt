@@ -2,6 +2,7 @@ package com.syafei.simplebottomsheet.ui
 
 import android.os.Build
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -10,13 +11,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.syafei.simplebottomsheet.data.TaskItem
 import com.syafei.simplebottomsheet.databinding.ActivityMainBinding
+import com.syafei.simplebottomsheet.repository.TodoApplication
 
 class MainActivity : AppCompatActivity(), TaskItemClickListener {
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
     private lateinit var binding: ActivityMainBinding
 
-    private lateinit var taskViewModel: TaskViewModel
+    //by viewModel KTX
+    private val taskViewModel: TaskViewModel by viewModels {
+        TaskItemModelFactory((application as TodoApplication).repository)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,7 +29,7 @@ class MainActivity : AppCompatActivity(), TaskItemClickListener {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        taskViewModel = ViewModelProvider(this).get(TaskViewModel::class.java)
+        //taskViewModel = ViewModelProvider(this).get(TaskViewModel::class.java)
 
         binding.newTaskButton.setOnClickListener {
 
